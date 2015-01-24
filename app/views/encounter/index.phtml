@@ -9,7 +9,8 @@ $(document).ready(function(){
 function generateEncounters() {
 	url = "generate";
 	data = {
-		characterLevels: [1,1,1,1]
+		characterLevels: [4,4,4,4,4,4],
+		terrain: 'all'
 	};
 	$.ajax({
 		url:url,

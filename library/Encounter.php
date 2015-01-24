@@ -6,8 +6,16 @@ class Encounter {
 	const HARD = 3;
 	const DEADLY = 4;
 	
-	function __construct($party) {
+	function __construct($party, $terrain, $difficulty) {
 		$this->party = $party;
+		$this->terrain = $terrain;
+		
+		if ($difficulty<1 || $difficulty>4) {
+			$this->difficulty = rand(1,4);
+		} else {
+			$this->difficulty = $difficulty;
+		}
+		
 		$this->monsterList = array();
 		$this->encounterSize = 1;
 		$this->experienceMultiplier = 0;
@@ -15,7 +23,7 @@ class Encounter {
 		$this->numberOfCreaturesRange = array(-1,-1);
 	}
 	
-	public function generateEncounterForDifficulty($difficulty) {
+	public function generate() {
 		$validCRs = array();
 		while(empty($validCRs)) {
 			if($this->encounterSize == 1) {
@@ -23,7 +31,7 @@ class Encounter {
 			} else {
 				$this->setEncounterSize($this->encounterSize-1);
 			}
-			$this->setExperienceRanges($difficulty);
+			$this->setExperienceRanges();
 			$this->setNumberOfCreaturesRanges();
 			
 			$minimumCreatures = $this->numberOfCreaturesRange[0];
@@ -47,15 +55,28 @@ class Encounter {
 			}
 			$this->validCRs = $validCRs;
 		}
-		$chosenCR = $validCRs[rand(0,count($validCRs)-1)];
-		$expPerCreature = $expByCR[(string)$chosenCR];
+		$this->chosenCR = $validCRs[rand(0,count($validCRs)-1)];
+		$this->generatePossibleMonsterPool();
+		$expPerCreature = $expByCR[(string)$this->chosenCR];
 		$maxNumberOfCreatures = max(min(floor($maxExpAllowed / ($expPerCreature*$this->experienceMultiplier)), $this->numberOfCreaturesRange[1]),$this->numberOfCreaturesRange[0]);
 		$minNumberOfCreatures = min(max(ceil($this->experienceRange[0]/ ($expPerCreature*$this->experienceMultiplier)), $this->numberOfCreaturesRange[0]),$this->numberOfCreaturesRange[1]);
 		$this->maxNum = $maxNumberOfCreatures;
 		$this->minNum = $minNumberOfCreatures;
 		$numberOfCreatures = rand($minNumberOfCreatures, $maxNumberOfCreatures);
 		$this->monsterList = array();
-		$this->monsterList[] = $numberOfCreatures .'x CR '. $chosenCR .' Creature - '. $expPerCreature .' XP each';
+		if(count($this->possibleMonsterPool)>0) {
+			$chosenMonster = $this->possibleMonsterPool[rand(0,count($this->possibleMonsterPool)-1)];
+			$this->monsterList[] = $numberOfCreatures .'x '.$chosenMonster['name'].' - '. $expPerCreature .' XP';
+		} else {
+			$this->monsterList[] = $numberOfCreatures .'x CR '. $this->chosenCR .' Creature - '. $expPerCreature .' XP';
+		}
+		if ($numberOfCreatures > 1) {
+			$this->monsterList[0] .= ' each';
+		}
+	}
+	
+	private function generatePossibleMonsterPool() {
+		$this->possibleMonsterPool = Monsters::getByTerrainAndCr($this->terrain, $this->chosenCR)->toArray();
 	}
 	
 	private function setNumberOfCreaturesRanges() {
@@ -72,10 +93,10 @@ class Encounter {
 		}
 	}
 	
-	private function setExperienceRanges($difficulty) {
-		$this->experienceRange[0] = $this->getPartyThreshold($difficulty);
-		if($difficulty < Encounter::DEADLY) {
-			$this->experienceRange[1] = $this->getPartyThreshold($difficulty+1)-1;
+	private function setExperienceRanges() {
+		$this->experienceRange[0] = $this->getPartyThreshold($this->difficulty);
+		if($this->difficulty < Encounter::DEADLY) {
+			$this->experienceRange[1] = $this->getPartyThreshold($this->difficulty+1)-1;
 		} else {
 			$this->experienceRange[1] = $this->experienceRange[0]*1.5;
 		}

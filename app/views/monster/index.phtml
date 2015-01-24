@@ -1,0 +1,34 @@
+<?php use Phalcon\Tag; ?>
+
+<?php echo Tag::form("monster/add"); ?>
+
+ <p>
+    <label for="name">Name</label>
+    <?php echo Tag::textField("name") ?>
+ </p>
+
+ <p>
+    <label for="email">CR</label>
+    <?php echo Tag::textField("cr") ?>
+ </p>
+ 
+ <p>
+    <label for="terrains">Terrains</label>
+    <?php echo Tag::textField("terrains") ?>
+ </p>
+ 
+ <p>
+    <label for="sourceBook">Source Book</label>
+    <?php echo Tag::textField("sourceBook") ?>
+ </p>
+ 
+ <p>
+    <label for="page">Page Number</label>
+    <?php echo Tag::textField("page") ?>
+ </p>
+
+ <p>
+    <?php echo Tag::submitButton("Add") ?>
+ </p>
+
+</form>

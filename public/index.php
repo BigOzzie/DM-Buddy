@@ -5,11 +5,22 @@ try {
     $loader = new \Phalcon\Loader();
     $loader->registerDirs(array(
         '../app/controllers/',
-        '../app/models/'
+        '../app/models/',
+		'../library/'
     ))->register();
 
     //Create a DI
     $di = new Phalcon\DI\FactoryDefault();
+	
+	//Setup the database service
+    $di->set('db', function(){
+        return new \Phalcon\Db\Adapter\Pdo\Mysql(array(
+            "host" => "localhost",
+            "username" => "root",
+            "password" => "",
+            "dbname" => "development"
+        ));
+    });
 
     //Setup the view component
     $di->set('view', function(){
