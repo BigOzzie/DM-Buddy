@@ -5,20 +5,33 @@ class MonsterController extends \Phalcon\Mvc\Controller
 
     public function indexAction()
     {
+		$this->view->validTerrains = Monsters::validTerrains();
+		$this->view->validCRs = Monsters::validCRs();
     }
 	
 	public function addAction()
 	{
-		$monster = new Monsters();
 		$params = $this->request->getPost();
-		
-		if(isset($params['terrains'])) {
-			$params['terrains'] = str_replace(' ','',$params['terrains']);
-			$params['terrains'] = explode(',',$params['terrains']);
-			$params['terrains'] = json_encode($params['terrains']);
+		$monsters = Monsters::findByName($params['name'])->toArray();
+		if(!empty($monsters)) {
+			echo 0;
+			die();
 		}
 		
-		$success = $monster->save($params, array('name','cr','terrains','sourceBook','page'));
+		$monster = new Monsters();
+		
+		$validCRs = Monsters::validCRs();
+		$params['cr'] = $validCRs[$params['cr']];
+		
+		if(isset($params['terrains'])) {
+			$validTerrains = Monsters::validTerrains();
+			foreach($params['terrains'] as $key=>$value) {
+				$params['terrains'][$key] = $validTerrains[$value];
+			}
+			$params['terrains'] = json_encode($params['terrains']);
+		}
+				
+		$success = $monster->save($params, array('name','plural','cr','terrains','sourceBook','page'));
 		
 		if ($success) {
             echo $monster->id;

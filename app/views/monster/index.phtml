@@ -1,34 +1,52 @@
 <?php use Phalcon\Tag; ?>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
-<?php echo Tag::form("monster/add"); ?>
+<?php $this->tag->setDefaults(array(
+	"sourceBook"=>"MM"
+));?>
+
+<?= $this->tag->form("monster/add"); ?>
 
  <p>
     <label for="name">Name</label>
-    <?php echo Tag::textField("name") ?>
+    <?= $this->tag->textField(array("name", 'onKeyUp'=>'updatePlural()')) ?>
+ </p>
+ 
+  <p>
+    <label for="plural">Plural Form</label>
+    <?= $this->tag->textField("plural") ?>
  </p>
 
  <p>
     <label for="email">CR</label>
-    <?php echo Tag::textField("cr") ?>
+    <?= $this->tag->select(array("cr", $validCRs)) ?>
  </p>
  
  <p>
     <label for="terrains">Terrains</label>
-    <?php echo Tag::textField("terrains") ?>
+    <?= $this->tag->select(array("terrains[]", $validTerrains, "multiple"=>true)) ?>
  </p>
  
  <p>
     <label for="sourceBook">Source Book</label>
-    <?php echo Tag::textField("sourceBook") ?>
+    <?= $this->tag->textField("sourceBook") ?>
  </p>
  
  <p>
     <label for="page">Page Number</label>
-    <?php echo Tag::textField("page") ?>
+    <?= $this->tag->textField("page") ?>
  </p>
 
  <p>
-    <?php echo Tag::submitButton("Add") ?>
+    <?= $this->tag->submitButton("Add") ?>
  </p>
 
-</form>
+<?= $this->tag->endForm() ?>
+
+<script>
+function updatePlural() {
+	val = $('#name').val();
+	if (val != '') val += 's';
+	$('#plural').val(val);
+}
+</script>

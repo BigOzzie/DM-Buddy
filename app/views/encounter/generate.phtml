@@ -1,2 +1,6 @@
 <?php
-var_dump($encounter);
+$output = $encounter->output();
+foreach($output as $line) {
+	echo $line . "<br/>";
+}
+echo var_dump($encounter);

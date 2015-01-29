@@ -1,16 +1,30 @@
+<?php use Phalcon\Tag; ?>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<?= $this->tag->form(array("encounter/generate", "method"=>"POST", "onsubmit"=>"generateEncounters()")); ?>
+
+ <p>
+    <label for="terrain">Terrain</label>
+    <?= $this->tag->select(array("terrain", $validTerrains)) ?>
+ </p>
+	
+ <p>
+    <?= $this->tag->submitButton("Generate") ?>
+ </p>
+
+<?= $this->tag->endForm() ?>
+<hr/>
 <div id="encounters"></div>
 
-<script>
-$(document).ready(function(){
-	generateEncounters();
-})
 
+<script>
 function generateEncounters() {
+	event.preventDefault();
 	url = "generate";
 	data = {
-		characterLevels: [4,4,4,4,4,4],
-		terrain: 'all'
+		characterLevels: [1,1,1,1],
+		terrain: $("#terrain").children("option").filter(":selected").text(),
+		difficulty: 4
 	};
 	$.ajax({
 		url:url,
