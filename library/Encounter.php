@@ -25,7 +25,8 @@ class Encounter {
 		
 		$this->encounterMakeup = array();
 		$this->monsterList = array();
-		$this->encounterSize = 1;
+		$this->encounterSize = 0;
+		$this->possibleEncounterSizes = array(1,2,3,4,5,6);
 		$this->experienceMultiplier = 0;
 		$this->experienceRangeLowerBound = -1;
 		$this->experienceRangeUpperBound = -1;
@@ -60,13 +61,18 @@ class Encounter {
 		while(empty($this->encounterMakeup)) {
 			while(empty($this->possibleBaseCRs)) {
 				$this->generateEncounterSize();
+				if(empty($this->possibleEncounterSizes)) {
+					return FALSE;
+				}
 				$this->setExperienceRanges();
 				$this->setNumberOfCreaturesRanges();
 				$this->findPossibleBaseCRs();
 			}
 			$this->generateEncounterMakeup();
+			$this->possibleBaseCRs = array();
 		}
 		$this->generateSpecificMonsters();
+		return TRUE;
 	}
 	
 	private function generateEncounterMakeup() {
@@ -78,22 +84,27 @@ class Encounter {
 			);
 		} else {
 			$attempts = 0;
-			while(empty($this->encounterMakeup) && $attempts < 10) {
+			while(empty($this->encounterMakeup) && $attempts < 50) {
 				$expBudgetMin = $this->experienceRangeLowerBound;
 				$expBudgetMax = $this->experienceRangeUpperBound;
 				$possibleCRs = $this->possibleBaseCRs;
 				$totalNumberOfCreatures = 0;
-				while($expBudgetMin > 0) {
+				while($expBudgetMin > 0 && count($possibleCRs) > 0) {
 					//$chosenCR = array_splice($possibleCRs,array_rand($possibleCRs),1)[0];
-					$chosenCR = $possibleCRs[array_rand($possibleCRs)];
+					$chosenCrIndex = array_rand($possibleCRs);
+					$chosenCR = $possibleCRs[$chosenCrIndex];
 					$expOfChosen = $expValues[$chosenCR] * $this->experienceMultiplier;
-					$maxNumberOfChosen = floor($expBudgetMax/$expOfChosen);
-					$numberOfChosen = rand(1, $maxNumberOfChosen);
-					$this->encounterMakeup[] = array('cr'=>$chosenCR, 'quantity' => $numberOfChosen);
-					
-					$expBudgetMin -= $expOfChosen * $numberOfChosen;
-					$expBudgetMax -= $expOfChosen * $numberOfChosen;
-					$totalNumberOfCreatures += $numberOfChosen;
+					if($expOfChosen > $expBudgetMax) {
+						array_splice($possibleCRs, $chosenCrIndex, 1);
+					} else {
+						$maxNumberOfChosen = floor($expBudgetMax/$expOfChosen);
+						$numberOfChosen = rand(1, $maxNumberOfChosen);
+						$this->encounterMakeup[] = array('cr'=>$chosenCR, 'quantity' => $numberOfChosen);
+						
+						$expBudgetMin -= $expOfChosen * $numberOfChosen;
+						$expBudgetMax -= $expOfChosen * $numberOfChosen;
+						$totalNumberOfCreatures += $numberOfChosen;
+					}
 				}
 				if($expBudgetMax < 0 || $totalNumberOfCreatures < $this->numberOfCreaturesRangeLowerBound || $totalNumberOfCreatures > $this->numberOfCreaturesRangeUpperBound) {
 					$this->encounterMakeup = array();
@@ -115,10 +126,13 @@ class Encounter {
 	}
 	
 	private function generateEncounterSize() {
-		if($this->encounterSize == 1) {
+		if($this->encounterSize > 0) {
+			unset($this->possibleEncounterSizes[array_search($this->encounterSize, $this->possibleEncounterSizes)]);
+		}
+		if(!empty($this->possibleEncounterSizes)) {
 			$this->rollEncounterSize();
 		} else {
-			$this->setEncounterSize($this->encounterSize-1);
+			$this->setEncounterSize(0);
 		}
 	}
 	
@@ -162,7 +176,7 @@ class Encounter {
 	}
 	
 	private function rollEncounterSize() {
-		$encounterSize = rand(1,6);
+		$encounterSize = $this->possibleEncounterSizes[array_rand($this->possibleEncounterSizes)];
 		$this->setEncounterSize($encounterSize);
 	}
 	

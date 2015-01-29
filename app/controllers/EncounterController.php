@@ -16,7 +16,9 @@ class EncounterController extends \Phalcon\Mvc\Controller
 		$difficulty = (isset($params['difficulty']) ? $params['difficulty'] : 0);
 		
 		$encounter = new Encounter($party, $terrain, $difficulty);
-		$encounter->generate();
+		if($encounter->generate() === FALSE) {
+			die("Generate failed!");
+		}
 		$this->view->encounter = $encounter;
 	}
 
