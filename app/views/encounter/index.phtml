@@ -7,6 +7,11 @@
     <label for="terrain">Terrain</label>
     <?= $this->tag->select(array("terrain", $validTerrains)) ?>
  </p>
+ 
+ <p>
+    <label for="difficulty">Difficulty</label>
+    <?= $this->tag->select(array("difficulty", $validDifficulties)) ?>
+ </p>
 	
  <p>
     <?= $this->tag->submitButton("Generate") ?>
@@ -22,9 +27,9 @@ function generateEncounters() {
 	event.preventDefault();
 	url = "generate";
 	data = {
-		characterLevels: [20],
-		terrain: $("#terrain").children("option").filter(":selected").text(),
-		difficulty: 4
+		characterLevels: [1,1,1,1],
+		terrain: $("#terrain").val(),
+		difficulty: $("#difficulty").val()
 	};
 	$.ajax({
 		url:url,

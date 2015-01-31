@@ -6,6 +6,7 @@ class EncounterController extends \Phalcon\Mvc\Controller
     public function indexAction()
     {
 		$this->view->validTerrains = Monsters::validTerrainsWithAllOption();
+		$this->view->validDifficulties = Encounter::validDifficulties();
     }
 	
 	public function generateAction()

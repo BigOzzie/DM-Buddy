@@ -24,10 +24,6 @@ class MonsterController extends \Phalcon\Mvc\Controller
 		$params['cr'] = $validCRs[$params['cr']];
 		
 		if(isset($params['terrains'])) {
-			$validTerrains = Monsters::validTerrains();
-			foreach($params['terrains'] as $key=>$value) {
-				$params['terrains'][$key] = $validTerrains[$value];
-			}
 			$params['terrains'] = json_encode($params['terrains']);
 		}
 				

@@ -14,13 +14,16 @@ class Monsters extends \Phalcon\Mvc\Model
 	}
 	
 	public static function validTerrains() {
-		return array(
-			'arctic', 'coastal', 'desert', 'forest', 'grassland', 'hill', 'mountain', 'swamp', 'underdark', 'underwater', 'urban'
-		);
+		$valid = array('arctic', 'coastal', 'desert', 'forest', 'grassland', 'hill', 'mountain', 'swamp', 'underdark', 'underwater', 'urban');
+		$returnVar = array();
+		foreach($valid as $terrain) {
+			$returnVar[$terrain] = ucfirst($terrain);
+		}
+		return $returnVar;
 	}
 	
 	public static function validTerrainsWithAllOption() {
-		return array_merge(array('all'), self::validTerrains());
+		return array_merge(array('all'=>'All'), self::validTerrains());
 	}
 	
 	public static function validCRs() {

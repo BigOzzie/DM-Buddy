@@ -34,6 +34,15 @@ class Encounter {
 		$this->numberOfCreaturesRangeUpperBound = -1;
 	}
 	
+	public static function validDifficulties() {
+		return array(
+			self::EASY=>'Easy',
+			self::MEDIUM=>'Medium',
+			self::HARD=>'Hard',
+			self::DEADLY=>'Deadly'
+		);
+	}
+	
 	public function output() {
 		$returnVar = array();
 		$expValues = $this->experienceByCR();
