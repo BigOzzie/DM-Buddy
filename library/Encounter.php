@@ -61,7 +61,10 @@ class Encounter {
 				$returnVar[] = $message;
 				$expTotal += $encounterPart['quantity'] * $expValues[$encounterPart['cr']];
 			}
-			$returnVar[] = 'TOTAL EXPERIENCE: '.number_format($expTotal,0);
+			$returnVar[] = '';
+			$returnVar[] = 'ENCOUNTER EXPERIENCE VALUE: '.number_format($expTotal*$this->experienceMultiplier,2);
+			$returnVar[] = 'EXPERIENCE AWARDED (TOTAL): '.number_format($expTotal,0);
+			$returnVar[] = 'EXPERIENCE AWARDED (PER CHARACTER): '.number_format($expTotal/$this->party->getPartySize(),0);
 		}
 		return $returnVar;
 	}
@@ -128,7 +131,7 @@ class Encounter {
 		$this->possibleBaseCRs = array();
 		foreach($expValues as $cr => $exp) {
 			$crExperienceValue = $exp * $this->experienceMultiplier;
-			if($crExperienceValue * $this->numberOfCreaturesRangeUpperBound >= $this->experienceRangeLowerBound && $crExperienceValue <= $this->experienceRangeUpperBound) {
+			if(($this->encounterSize!=1 || $crExperienceValue >= $this->experienceRangeLowerBound) && $crExperienceValue <= $this->experienceRangeUpperBound) {
 				$this->possibleBaseCRs[] = $cr;
 			}
 		}
@@ -235,6 +238,7 @@ class Encounter {
 	
 	private static function experienceByCR() {
 		return array(
+			'0' => 10,
 			'0.125' => 25,
 			'0.25' => 50,
 			'0.5' => 100,

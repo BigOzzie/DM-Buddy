@@ -18,6 +18,7 @@ class EncounterController extends \Phalcon\Mvc\Controller
 		
 		$encounter = new Encounter($party, $terrain, $difficulty);
 		if($encounter->generate() === FALSE) {
+			die(var_dump($encounter));
 			die("Generate failed!");
 		}
 		$this->view->encounter = $encounter;

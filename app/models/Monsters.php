@@ -27,7 +27,7 @@ class Monsters extends \Phalcon\Mvc\Model
 	}
 	
 	public static function validCRs() {
-		$output = array(0.125, 0.25, 0.5);
+		$output = array(0, 0.125, 0.25, 0.5);
 		for($i=1; $i<=24; $i++) {
 			$output[] = $i;
 		}
