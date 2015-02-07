@@ -13,14 +13,7 @@ try {
     $di = new Phalcon\DI\FactoryDefault();
 	
 	//Setup the database service
-    $di->set('db', function(){
-        return new \Phalcon\Db\Adapter\Pdo\Mysql(array(
-            "host" => "localhost",
-            "username" => "root",
-            "password" => "",
-            "dbname" => "development"
-        ));
-    });
+	include('dbInfo.php');
 
     //Setup the view component
     $di->set('view', function(){
