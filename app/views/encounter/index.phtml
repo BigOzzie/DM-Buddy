@@ -1,4 +1,8 @@
 <?php use Phalcon\Tag; ?>
+<?php $this->tag->setDefaults(array(
+	"characterLevels"=>"1,1,1,1"
+));?>
+
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
 <?= $this->tag->form(array("encounter/generate", "method"=>"POST", "onsubmit"=>"generateEncounters()")); ?>
@@ -11,6 +15,11 @@
  <p>
     <label for="difficulty">Difficulty</label>
     <?= $this->tag->select(array("difficulty", $validDifficulties)) ?>
+ </p>
+ 
+ <p>
+    <label for="characterLevels">Party (comma separated list of character levels)</label>
+    <?= $this->tag->textField("characterLevels") ?>
  </p>
 	
  <p>
@@ -25,9 +34,13 @@
 <script>
 function generateEncounters() {
 	event.preventDefault();
-	url = "generate";
+	url = "encounter/generate";
+	characterLevels = $("#characterLevels").val().split(",");
+	$.each(characterLevels, function(i,v){
+		characterLevels[i] = parseInt(v);
+	});
 	data = {
-		characterLevels: [4,4,4,4,4,4],
+		characterLevels: characterLevels,
 		terrain: $("#terrain").val(),
 		difficulty: $("#difficulty").val()
 	};
